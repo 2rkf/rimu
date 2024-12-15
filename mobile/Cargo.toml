@@ -1,0 +1,29 @@
+[package]
+name = "mobile"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[lib]
+name = "mobile"
+crate-type = ["staticlib", "cdylib"]
+
+[dependencies]
+rimu = { path = ".." }
+bevy = { version = "0.15"}
+
+[package.metadata.android]
+name = "Rimu!"
+package = "moe.rkf.rimu"
+assets = "../assets"
+version = "1.0.0"
+resources = "../build/android/res"
+strip = "strip"
+build_targets = ["aarch64-linux-android"]
+
+[package.metadata.android.sdk]
+target_sdk_version = 34
+
+[package.metadata.android.application]
+icon = "@mipmap/icon"
+label = "Rimu!"

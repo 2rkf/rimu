@@ -1,0 +1,12 @@
+[package]
+name = "rimu"
+version = "0.1.0"
+edition = "2021"
+
+[workspace]
+members = ["mobile"]
+
+[dependencies]
+bevy = { version = "0.15" }
+winit = { version = "0.30", default-features = false }
+image = { version = "0.25", default-features = false }
