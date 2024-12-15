@@ -13,6 +13,8 @@ impl Plugin for MenuPlugin {
 }
 
 fn setup_menu(mut commands: Commands, res: Res<AssetServer>) {
+    let version = env!("CARGO_PKG_VERSION");
+
     commands.spawn(Camera2d);
 
     commands.spawn((
@@ -26,7 +28,7 @@ fn setup_menu(mut commands: Commands, res: Res<AssetServer>) {
             width: Val::Percent(100.0),
             height: Val::Percent(100.0),
             align_items: AlignItems::Center,
-            flex_direction: FlexDirection::Column,
+            flex_direction: FlexDirection::Row,
             justify_content: JustifyContent::Center,
             margin: UiRect::new(Val::Px(0.0), Val::Px(0.0), Val::Px(-20.0), Val::Px(0.0)),
             ..Default::default()
@@ -43,6 +45,29 @@ fn setup_menu(mut commands: Commands, res: Res<AssetServer>) {
                 TextColor(Color::srgb(1.0, 0.75, 0.8)),
             ));
 
+            parent.spawn((
+                Text::new(format!("v{}", version)),
+                TextFont {
+                    font_size: 20.0,
+                    ..Default::default()
+                },
+                Node {
+                    margin: UiRect::new(Val::Px(0.0), Val::Px(0.0), Val::Px(10.0), Val::Px(0.0)),
+                    ..Default::default()
+                }
+            ));
+        });
+
+        commands.spawn(Node {
+            width: Val::Percent(100.0),
+            height: Val::Percent(100.0),
+            align_items: AlignItems::Center,
+            flex_direction: FlexDirection::Column,
+            justify_content: JustifyContent::Center,
+            margin: UiRect::new(Val::Px(0.0), Val::Px(0.0), Val::Px(20.0), Val::Px(0.0)),
+            ..Default::default()
+        })
+        .with_children(|parent| {
             // Touch to Play
             parent.spawn((
                 Text::new("Touch to Play"),
@@ -56,7 +81,7 @@ fn setup_menu(mut commands: Commands, res: Res<AssetServer>) {
                     ..Default::default()
                 }
             ));
-        }); 
+        });
 }
 
 fn handle_touch( 
