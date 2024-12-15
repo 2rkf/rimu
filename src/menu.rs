@@ -37,7 +37,7 @@ fn setup_menu(mut commands: Commands, res: Res<AssetServer>) {
             parent.spawn((
                 Text::new("Rimu!"),
                 TextFont {
-                    font: res.load("neon.otf"),
+                    font: res.load("fonts/neon.otf"),
                     font_size: 75.0,
                     ..Default::default()
                 },
@@ -73,7 +73,7 @@ fn setup_menu(mut commands: Commands, res: Res<AssetServer>) {
             parent.spawn((
                 Text::new("Touch to Play"),
                 TextFont {
-                    font: res.load("neon_club.otf"),
+                    font: res.load("fonts/neon_club.otf"),
                     font_size: 15.0,
                     ..Default::default()
                 },
@@ -97,7 +97,7 @@ fn setup_menu(mut commands: Commands, res: Res<AssetServer>) {
         .with_children(|parent| {
             parent.spawn((
                 ImageNode {
-                    image: res.load("settings.png"),
+                    image: res.load("icons/settings.png"),
                     ..Default::default()
                 },
                 Node {
