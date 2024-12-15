@@ -47,12 +47,13 @@ fn setup_menu(mut commands: Commands, res: Res<AssetServer>) {
 
             parent.spawn((
                 Text::new(format!("v{}", version)),
+                TextColor(Color::srgb(0.6, 0.6, 0.6)),
                 TextFont {
                     font_size: 20.0,
                     ..Default::default()
                 },
                 Node {
-                    margin: UiRect::new(Val::Px(0.0), Val::Px(0.0), Val::Px(10.0), Val::Px(0.0)),
+                    margin: UiRect::new(Val::Px(10.0), Val::Px(0.0), Val::Px(15.0), Val::Px(0.0)),
                     ..Default::default()
                 }
             ));
@@ -80,6 +81,31 @@ fn setup_menu(mut commands: Commands, res: Res<AssetServer>) {
                     margin: UiRect::new(Val::Px(0.0), Val::Px(0.0), Val::Px(10.0), Val::Px(0.0)),
                     ..Default::default()
                 }
+            ));
+        });
+
+        // Settings
+        commands.spawn(Node {
+            width: Val::Percent(100.0),
+            height: Val::Percent(100.0),
+            align_items: AlignItems::FlexEnd,
+            justify_content: JustifyContent::FlexEnd,
+            position_type: PositionType::Absolute,
+            margin: UiRect::new(Val::Px(0.0), Val::Px(10.0), Val::Px(0.0), Val::Px(0.0)),
+            ..Default::default()
+        })
+        .with_children(|parent| {
+            parent.spawn((
+                ImageNode {
+                    image: res.load("settings.png"),
+                    ..Default::default()
+                },
+                Node {
+                    width: Val::Px(75.0),
+                    height: Val::Px(75.0),
+                    ..Default::default()
+                },
+                Interaction::default()
             ));
         });
 }
