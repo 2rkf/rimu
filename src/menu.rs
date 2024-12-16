@@ -2,28 +2,32 @@ use crate::GameState;
 
 use bevy::prelude::*;
 
+#[derive(Resource)]
+struct MenuData {
+    root_entities: Vec<Entity>,
+}
+
 pub struct MenuPlugin;
 
 impl Plugin for MenuPlugin {
     fn build(&self, app: &mut App) {
         app
         .add_systems(OnEnter(GameState::Menu), setup_menu)
-        .add_systems(Update, handle_touch);
+        .add_systems(OnExit(GameState::Menu), cleanup_menu)
+        .add_systems(Update, handle_settings_interaction);
     }
 }
 
 fn setup_menu(mut commands: Commands, res: Res<AssetServer>) {
     let version = env!("CARGO_PKG_VERSION");
 
-    commands.spawn(Camera2d);
-
     commands.spawn((
         Transform::from_scale(Vec3::splat(1.5)),
-        BackgroundColor(Color::srgb(0.1, 0.1, 0.1))
+        BackgroundColor(Color::srgb(0.1, 0.1, 0.1)),
     ));
 
     // Title "Rimu!"
-    commands
+    let title_entity = commands
         .spawn(Node {
             width: Val::Percent(100.0),
             height: Val::Percent(100.0),
@@ -49,17 +53,19 @@ fn setup_menu(mut commands: Commands, res: Res<AssetServer>) {
                 Text::new(format!("v{}", version)),
                 TextColor(Color::srgb(0.6, 0.6, 0.6)),
                 TextFont {
-                    font_size: 20.0,
+                    font_size: 15.0,
                     ..Default::default()
                 },
                 Node {
                     margin: UiRect::new(Val::Px(10.0), Val::Px(0.0), Val::Px(15.0), Val::Px(0.0)),
                     ..Default::default()
-                }
+                },
             ));
-        });
+        })
+        .id();
 
-        commands.spawn(Node {
+    let touch_entity = commands
+        .spawn(Node {
             width: Val::Percent(100.0),
             height: Val::Percent(100.0),
             align_items: AlignItems::Center,
@@ -78,14 +84,16 @@ fn setup_menu(mut commands: Commands, res: Res<AssetServer>) {
                     ..Default::default()
                 },
                 Node {
-                    margin: UiRect::new(Val::Px(0.0), Val::Px(0.0), Val::Px(10.0), Val::Px(0.0)),
+                    margin: UiRect::new(Val::Px(0.0), Val::Px(0.0), Val::Px(100.0), Val::Px(0.0)),
                     ..Default::default()
                 }
             ));
-        });
+        })
+        .id();
 
-        // Settings
-        commands.spawn(Node {
+    // Settings
+    let settings_entity = commands
+        .spawn(Node {
             width: Val::Percent(100.0),
             height: Val::Percent(100.0),
             align_items: AlignItems::FlexEnd,
@@ -96,6 +104,7 @@ fn setup_menu(mut commands: Commands, res: Res<AssetServer>) {
         })
         .with_children(|parent| {
             parent.spawn((
+                Button,
                 ImageNode {
                     image: res.load("icons/settings.png"),
                     ..Default::default()
@@ -107,15 +116,31 @@ fn setup_menu(mut commands: Commands, res: Res<AssetServer>) {
                 },
                 Interaction::default()
             ));
+        })
+        .id();
+
+        commands.insert_resource(MenuData {
+            root_entities: vec![
+                title_entity,
+                touch_entity,
+                settings_entity,
+            ]
         });
 }
 
-fn handle_touch( 
-    mut app_exit_events: EventWriter<AppExit>,
-    touches: Res<Touches>,
+fn handle_settings_interaction(
+    mut interaction_query: Query<&Interaction, (Changed<Interaction>, With<Button>)>,
+    mut game_state: ResMut<NextState<GameState>>,
 ) {
-    if touches.just_pressed(0) {
-        println!("Screen touched! Starting the game...");
-        app_exit_events.send(AppExit::Success);
+    for interaction in &mut interaction_query {
+        if *interaction == Interaction::Pressed {
+            game_state.set(GameState::Settings);
+        }
+    }
+}
+
+fn cleanup_menu(mut commands: Commands, menu_data: Res<MenuData>) {
+    for entity in &menu_data.root_entities {
+        commands.entity(*entity).despawn_recursive();
     }
 }

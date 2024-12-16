@@ -5,7 +5,7 @@ use std::io::Cursor;
 
 fn main() {
     App::new()
-        .add_systems(Startup, set_window_icon)
+        .add_systems(Startup, (set_window_icon, setup))
         .insert_resource(ClearColor(Color::srgb(0.1, 0.1, 0.1)))
         .add_plugins(
             DefaultPlugins
@@ -24,6 +24,10 @@ fn main() {
         )
         .add_plugins(GamePlugin)
         .run();
+}
+
+fn setup(mut commands: Commands) {
+    commands.spawn(Camera2d);
 }
 
 fn set_window_icon(
