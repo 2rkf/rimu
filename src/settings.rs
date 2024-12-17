@@ -13,6 +13,9 @@ impl Plugin for SettingsPlugin {
 }
 
 #[derive(Component)]
+struct BackButton;
+
+#[derive(Component)]
 struct SettingsMenu;
 
 fn setup_settings_menu(mut commands: Commands, res: Res<AssetServer>) {
@@ -38,7 +41,8 @@ fn setup_settings_menu(mut commands: Commands, res: Res<AssetServer>) {
                 margin: UiRect::new(Val::Px(10.0), Val::Px(0.0), Val::Px(22.5), Val::Px(0.0)),
                 ..Default::default()
             },
-            Button,
+            BackButton,
+            Interaction::default(),
         ));
 
         parent.spawn((
@@ -59,7 +63,7 @@ fn setup_settings_menu(mut commands: Commands, res: Res<AssetServer>) {
 fn handle_settings_interaction(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
-    mut interaction_query: Query<&Interaction>,
+    mut interaction_query: Query<&Interaction, (Changed<Interaction>, With<BackButton>)>,
     mut game_state: ResMut<NextState<GameState>>
 ) {
     for interaction in &mut interaction_query {

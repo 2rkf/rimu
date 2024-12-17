@@ -7,6 +7,9 @@ struct MenuData {
     root_entities: Vec<Entity>,
 }
 
+#[derive(Component)]
+struct SettingsButton;
+
 pub struct MenuPlugin;
 
 impl Plugin for MenuPlugin {
@@ -104,7 +107,7 @@ fn setup_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
         })
         .with_children(|parent| {
             parent.spawn((
-                Button,
+                SettingsButton,
                 ImageNode {
                     image: asset_server.load("icons/settings.png"),
                     ..Default::default()
@@ -131,7 +134,7 @@ fn setup_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
 fn handle_settings_interaction(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
-    mut interaction_query: Query<&Interaction, (Changed<Interaction>, With<Button>)>,
+    mut interaction_query: Query<&Interaction, (Changed<Interaction>, With<SettingsButton>)>,
     mut game_state: ResMut<NextState<GameState>>,
 ) {
     for interaction in &mut interaction_query {
