@@ -57,12 +57,15 @@ fn setup_settings_menu(mut commands: Commands, res: Res<AssetServer>) {
 }
 
 fn handle_settings_interaction(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
     mut interaction_query: Query<&Interaction>,
     mut game_state: ResMut<NextState<GameState>>
 ) {
     for interaction in &mut interaction_query {
         if *interaction == Interaction::Pressed {
             game_state.set(GameState::Menu);
+            commands.spawn(AudioPlayer::new(asset_server.load("audio/button.ogg")));
         }
     }
 }

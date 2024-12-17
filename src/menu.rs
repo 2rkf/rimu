@@ -14,11 +14,11 @@ impl Plugin for MenuPlugin {
         app
         .add_systems(OnEnter(GameState::Menu), setup_menu)
         .add_systems(OnExit(GameState::Menu), cleanup_menu)
-        .add_systems(Update, handle_settings_interaction);
+        .add_systems(Update, handle_settings_interaction.run_if(in_state(GameState::Menu)));
     }
 }
 
-fn setup_menu(mut commands: Commands, res: Res<AssetServer>) {
+fn setup_menu(mut commands: Commands, asset_server: Res<AssetServer>) {
     let version = env!("CARGO_PKG_VERSION");
 
     commands.spawn((
@@ -41,7 +41,7 @@ fn setup_menu(mut commands: Commands, res: Res<AssetServer>) {
             parent.spawn((
                 Text::new("Rimu!"),
                 TextFont {
-                    font: res.load("fonts/neon.otf"),
+                    font: asset_server.load("fonts/neon.otf"),
                     font_size: 75.0,
                     ..Default::default()
                 },
@@ -79,7 +79,7 @@ fn setup_menu(mut commands: Commands, res: Res<AssetServer>) {
             parent.spawn((
                 Text::new("Touch to Play"),
                 TextFont {
-                    font: res.load("fonts/neon_club.otf"),
+                    font: asset_server.load("fonts/neon_club.otf"),
                     font_size: 15.0,
                     ..Default::default()
                 },
@@ -106,7 +106,7 @@ fn setup_menu(mut commands: Commands, res: Res<AssetServer>) {
             parent.spawn((
                 Button,
                 ImageNode {
-                    image: res.load("icons/settings.png"),
+                    image: asset_server.load("icons/settings.png"),
                     ..Default::default()
                 },
                 Node {
@@ -129,12 +129,15 @@ fn setup_menu(mut commands: Commands, res: Res<AssetServer>) {
 }
 
 fn handle_settings_interaction(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
     mut interaction_query: Query<&Interaction, (Changed<Interaction>, With<Button>)>,
     mut game_state: ResMut<NextState<GameState>>,
 ) {
     for interaction in &mut interaction_query {
         if *interaction == Interaction::Pressed {
             game_state.set(GameState::Settings);
+            commands.spawn(AudioPlayer::new(asset_server.load("audio/button.ogg")));
         }
     }
 }
